@@ -334,7 +334,7 @@ def similarity(file_path, gene_a, gene_b, save_path='./'):
 
     # Assuming that the first column is the gene name, find the whole rows of gene_a and gene_b according to the name in the first column.
     first_column_name = df.columns[0]  # 动态获取第一列的名称
-    x = df.loc[df[first_column_name] == gene_a].iloc[0, 1:].astype(float).values
+    x = df.loc[df[first_column_name] == gene_a].iloc[0, 1:].astype(float).valuesengx
     y = df.loc[df[first_column_name] == gene_b].iloc[0, 1:].astype(float).values
 
     # Calculate Pearson's correlation coefficient and p-value
