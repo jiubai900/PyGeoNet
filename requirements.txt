@@ -14,5 +14,6 @@ GEOparse >= 2.0.0
 beautifulsoup4 >= 4.12.0  
 requests >= 2.31.0  
 tqdm >= 4.66.0  
-fuzzywuzzy >= 0.18.0 
+fuzzywuzzy >= 0.18.0
+torch-geometric >= 2.4.0
 # 读写Excel文件（处理通路文件和结果输出）  

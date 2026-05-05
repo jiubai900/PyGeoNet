@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyGeoNet 转录组自动化分析平台</title>
+    <style>
+        :root {
+            --primary: #426b2a;
+            --primary-dark: #34541f;
+            --primary-light: #eef5e8;
+            --accent: #f29b62;
+            --background: #f5f7f3;
+            --surface: #ffffff;
+            --surface-soft: #f8fbf6;
+            --border: #dbe6d4;
+            --text: #1f2937;
+            --text-soft: #5b6472;
+            --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+            --shadow-soft: 0 6px 18px rgba(31, 41, 55, 0.05);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --content-width: 1380px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #f0f7ea 0%, transparent 30%),
+                radial-gradient(circle at top right, #f8efe8 0%, transparent 22%),
+                var(--background);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .page-shell {
+            width: min(var(--content-width), 94%);
+            margin: 0 auto;
+            padding: 22px 0 36px;
+        }
+
+        /* 这里改成单列，标题整块铺满 */
+        .site-header {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .brand-panel {
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7eb 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 28px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 150px;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        .brand-title {
+            display: block;
+            width: 100%;
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.22;
+            color: var(--primary-dark);
+            margin: 0 0 12px 0;
+            letter-spacing: 0;
+            word-break: break-word;
+        }
+
+        .brand-subtitle {
+            display: block;
+            width: 100%;
+            font-size: 15px;
+            line-height: 1.9;
+            color: var(--text-soft);
+            margin: 0;
+            max-width: none;
+        }
+
+        .nav-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            padding: 14px;
+            margin-bottom: 22px;
+        }
+
+        .navbar {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .navbar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 54px;
+            padding: 10px 12px;
+            text-align: center;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff 0%, #f7faf5 100%);
+            color: var(--primary-dark);
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.22s ease;
+            box-shadow: 0 4px 10px rgba(31, 41, 55, 0.04);
+        }
+
+        .navbar a:hover {
+            transform: translateY(-2px);
+            border-color: #b8cfaa;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .navbar a.active {
+            background: linear-gradient(135deg, var(--primary) 0%, #5d8745 100%);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 8px 18px rgba(66, 107, 42, 0.22);
+        }
+
+        .main-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 26px;
+            min-height: 560px;
+        }
+
+        .content-section {
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            margin: 0 0 12px 0;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.3;
+        }
+
+        .section-desc {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.9;
+            color: var(--text-soft);
+        }
+
+        .card {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.03);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eef4ea;
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .page-footer {
+            margin-top: 18px;
+            text-align: center;
+            color: #7a8593;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 1200px) {
+            .navbar {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+            .page-shell {
+                width: 95%;
+                padding-top: 16px;
+            }
+
+            .brand-panel {
+                padding: 22px 20px;
+            }
+
+            .brand-title {
+                font-size: 30px;
+            }
+
+            .brand-subtitle {
+                font-size: 14px;
+            }
+
+            .navbar {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .main-content {
+                padding: 18px;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .navbar {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+
+    {% block style_css %}{% endblock %}
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <div class="brand-panel">
+                <div class="brand-badge">Transcriptome Analysis Platform</div>
+                <h1 class="brand-title">PyGeoNet 转录组自动化分析平台</h1>
+                <p class="brand-subtitle">
+                    面向 GEO 转录组数据的检索、下载、标准化、差异分析、关系预测与通路映射的一体化可视化分析平台。
+                </p>
+            </div>
+        </header>
+
+        <div class="nav-wrapper">
+            <nav class="navbar">
+                <a id="home" href="/" class="{% if active_page == 'home' %}active{% endif %}">首页</a>
+                <a id="search" href="/search" class="{% if active_page == 'search' %}active{% endif %}">数据检索</a>
+                <a id="download" href="/download" class="{% if active_page == 'download' %}active{% endif %}">数据下载</a>
+                <a id="standardization" href="/standardization" class="{% if active_page == 'standardization' %}active{% endif %}">数据规范化</a>
+                <a id="analysis" href="/plot" class="{% if active_page == 'analysis' %}active{% endif %}">差异分析</a>
+                <a id="models" href="/models" class="{% if active_page == 'models' %}active{% endif %}">分类模型</a>
+                <a id="super-model" href="/super-model" class="{% if active_page == 'super-model' %}active{% endif %}">候选基因关系边预测</a>
+            </nav>
+        </div>
+
+        <main class="main-content">
+            {% block body %}{% endblock %}
+        </main>
+
+        <div class="page-footer">
+            PyGeoNet Transcriptome Analysis Platform
+        </div>
+    </div>
+</body>
+</html>

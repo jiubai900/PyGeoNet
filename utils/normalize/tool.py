@@ -1,6 +1,7 @@
 from openpyxl.workbook import Workbook
 from typing import Union, List
 from datetime import datetime
+import threading
 import re
 from io import StringIO
 import gzip
@@ -32,19 +33,43 @@ if not any(
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
+def normalize_log(message):
+    """Print normalize progress messages with timestamp and thread name."""
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    thread_name = threading.current_thread().name
+    print(f'[normalize][{timestamp}][{thread_name}] {message}', flush=True)
+
+
+def dataframe_shape(df):
+    """Return a safe rows x columns string for debug printing."""
+    try:
+        return f'{df.shape[0]} rows x {df.shape[1]} columns'
+    except Exception:
+        return 'unknown shape'
+
 
 def analyse_matrix(matrix_path, gpl_path, suppl_path, save_path):
     gse_number = os.path.basename(matrix_path)
+    normalize_log(f"[{gse_number}] analyse_matrix started. source={matrix_path}, save_path={save_path}")
+
     if not os.path.exists(save_path):
         os.makedirs(save_path)
+
     matrix_path = os.path.join(matrix_path, 'matrix')
-    if 'GSE' == gse_number[0:3]:
+
+    if gse_number.startswith('GSE'):
         file_arr = []
         for root, dirs, files in os.walk(matrix_path):
             for file in files:
                 file_arr.append(os.path.join(root, file))
+
+        normalize_log(f"[{gse_number}] Found {len(file_arr)} matrix file(s).")
+
         get_file(matrix_path, file_arr, gse_number, gpl_path, suppl_path, save_path)
+
+        normalize_log(f"[{gse_number}] analyse_matrix finished.")
     else:
+        normalize_log(f"[{gse_number}] Invalid directory name for GEO series: {matrix_path}")
         logger.error(f"{matrix_path} is not a valid directory.")
 
 
@@ -171,6 +196,7 @@ def write_excel(file, save_path):
 
 
 def rename_file(path):
+    normalize_log(f"Classifying normalized data directory: {path}")
     RNA = ['RNA', 'data3', 'matrix']
     Counts = ['Counts', 'count', 'Count', 'counts', 'GSM']
     scRNA = ['scRNA', 'feature', 'barcode']
@@ -215,15 +241,20 @@ def rename_file(path):
 
     if isCounts:
         shutil.move(path, f'{path}_Count')
+        normalize_log(f"Directory classified as Count data: {path}_Count")
         return f'{path}_Count'
     elif isscRNA:
         shutil.move(path, f'{path}_scRNA')
+        normalize_log(f"Directory classified as scRNA data: {path}_scRNA")
         return f'{path}_scRNA'
     elif isRNA:
         shutil.move(path, f'{path}_RNA__')
+        normalize_log(f"Directory classified as RNA data: {path}_RNA__")
         return f'{path}_RNA__'
     else:
         shutil.move(path, f'{path}_error')
+        normalize_log(f"Directory could not be classified and was marked as error: {path}_error")
+        return f'{path}_error'
 
 
 def remove_dirs(path_dir):
@@ -250,20 +281,27 @@ def remove_dirs(path_dir):
 
 
 def formal(save_path, gpl_path, soft_path):
-    if 'RNA' in os.path.basename(save_path):  # Correct RNA data type
+    normalize_log(f"Formal normalization started: save_path={save_path}")
+    if 'RNA' in os.path.basename(save_path):
         try:
+            normalize_log(f"Detected RNA branch for {save_path}.")
             save_path = rna_correlation(save_path, gpl_path, soft_path)
-        except Exception as e:  # Replace with actual possible exceptions
+            normalize_log(f"RNA branch finished. Result path={save_path}")
+        except Exception as e:
+            normalize_log(f"RNA branch failed for {save_path}: {e}")
             logger.error(f"Error processing data: {e}")
 
     elif 'Count' in os.path.basename(save_path):
-
         try:
+            normalize_log(f"Detected Count branch for {save_path}.")
             save_path = counts_correlation(save_path, gpl_path, soft_path)
-        except Exception as e:  # Replace with actual possible exceptions
+            normalize_log(f"Count branch finished. Result path={save_path}")
+        except Exception as e:
+            normalize_log(f"Count branch failed for {save_path}: {e}")
             logger.error(f"Error processing data: {e}")
 
     if not os.listdir(save_path):
+        normalize_log(f"Result directory is empty. Marking as _443: {save_path}_443")
         shutil.move(save_path, f'{save_path}_443')
         return
 
@@ -272,46 +310,66 @@ def formal(save_path, gpl_path, soft_path):
             for file in files:
                 if file.endswith('.soft'):
                     return
-
+    normalize_log(f"No .soft file found or path marked as error. Marking as _443: {save_path}_443")
     shutil.move(f'{save_path}', f'{save_path}_443')
 
 
 def sum_get_data(data_file_path, gpl_path, save_path):
     d = os.path.basename(data_file_path)
+    normalize_log(f"[{d}] Dataset processing started. source={data_file_path}")
+
     save_path = os.path.join(save_path, d)
 
     soft_path = os.path.join(data_file_path, 'soft')
     if not os.path.exists(soft_path):
-        print(f'{d} has no soft file')
+        normalize_log(f"[{d}] Missing soft directory: {soft_path}. Skip this dataset.")
         return
+
     suppl_path = os.path.join(data_file_path, 'suppl')
+
     matrix_path = os.path.join(data_file_path, 'matrix')
     if not os.path.exists(matrix_path):
-        print(f'{d} has no soft file')
+        normalize_log(f"[{d}] Missing matrix directory: {matrix_path}. Skip this dataset.")
         return
+
     if os.path.exists(save_path):
+        normalize_log(f"[{d}] Output directory already exists: {save_path}. Skip this dataset.")
         return
+
     elif os.path.exists(f'{save_path}_RNA__') or os.path.exists(f'{save_path}_Count') or os.path.exists(
             f'{save_path}_scRNA') or os.path.exists(f'{save_path}_error'):
+
+        normalize_log(f"[{d}] Old normalized output found. Removing old output and reprocessing.")
+
         if os.path.exists(f'{save_path}_RNA__'): shutil.rmtree(f'{save_path}_RNA__')
         if os.path.exists(f'{save_path}_Count'): shutil.rmtree(f'{save_path}_Count')
         if os.path.exists(f'{save_path}_scRNA'): shutil.rmtree(f'{save_path}_scRNA')
         if os.path.exists(f'{save_path}_error'): shutil.rmtree(f'{save_path}_error')
+
         os.makedirs(save_path)
+        normalize_log(f"[{d}] Created working output directory: {save_path}")
+
         analyse_matrix(data_file_path, gpl_path, suppl_path, save_path)
         # unzip_unrar(save_path)
+
         save_path = rename_file(save_path)
         remove_dirs(save_path)
         formal(save_path, gpl_path, soft_path)
-        print(f'{d}Operation completed')
+
+        normalize_log(f"[{d}] Operation completed.")
+
     else:
         os.makedirs(save_path)
+        normalize_log(f"[{d}] Created working output directory: {save_path}")
+
         analyse_matrix(data_file_path, gpl_path, suppl_path, save_path)
         # unzip_unrar(save_path)
+
         save_path = rename_file(save_path)
         remove_dirs(save_path)
         formal(save_path, gpl_path, soft_path)
-        print(f'{d}Operation completed')
+
+        normalize_log(f"[{d}] Operation completed.")
 
 
 def insert_symbol(df, save_path, gpl_path):

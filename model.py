@@ -70,7 +70,15 @@ def class_predict(adj_matrix_path, feature_matrix_path, model_path, num_classes,
 
 
 def edge_pre(data_path, feature_dir, gene_map_path, model_name, conv_channels, th_filter, th_add, th_filter_max,
-             th_filter_min, th_add_max, th_add_min, epoch, gene_list):
+             th_filter_min, th_add_max, th_add_min, epoch, gene_list, seed=42):
+    """
+    Edge prediction / optimization entry.
+
+    seed:
+        Used for repeated experiments with different random seeds.
+        The actual random control is implemented inside model_geo() in edge_tool.py.
+    """
+
     edge_index = pd.read_csv(data_path, sep='\t', header=0)
     edge_index = edge_index.iloc[:, :2]
     edge_index = edge_index.apply(pd.to_numeric, errors='coerce')
@@ -78,18 +86,27 @@ def edge_pre(data_path, feature_dir, gene_map_path, model_name, conv_channels, t
 
     x = []
     in_channels = 0
-    for root, _, files in os.walk(feature_dir):
-        for file in files:
-            df = pd.read_csv(os.path.join(root, file), sep='\t', header=0, index_col=0)
+
+    # Important: sort folders/files to keep input order stable across runs
+    for root, dirs, files in os.walk(feature_dir):
+        dirs.sort()
+        for file in sorted(files):
+            file_path = os.path.join(root, file)
+            df = pd.read_csv(file_path, sep='\t', header=0, index_col=0)
             df = df.replace([None, ''], np.nan)
             df.fillna(0, inplace=True)
             df = torch.tensor(df.values, dtype=torch.float)
             in_channels = df.size(1)
             x.append(df)
+
     data = Data(x=x, edge_index=edge_index)
-    save_path = os.path.join(os.path.dirname(data_path), f'result_data_{model_name}_{th_filter}_{th_add}')
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+
+    base_save_path = os.path.join(
+        os.path.dirname(data_path),
+        f'result_data_{model_name}_{th_filter}_{th_add}_seed{seed}'
+    )
+    os.makedirs(base_save_path, exist_ok=True)
+
     gene_map = {}
     with open(gene_map_path, 'r') as f:
         for line in f:
@@ -97,10 +114,33 @@ def edge_pre(data_path, feature_dir, gene_map_path, model_name, conv_channels, t
             value = value.strip()
             key = key.strip()
             gene_map[key] = value
-    conv_channels.insert(0, in_channels)
-    model_geo(data, th_filter, th_add, th_filter_max, th_filter_min, th_add_max, th_add_min,
-              epoch, save_path, gene_map, model_name, conv_channels,  gene_list)
 
+    # Do NOT use conv_channels.insert(0, in_channels), because it modifies the original list.
+    full_conv_channels = [in_channels] + list(conv_channels)
+
+    print("=" * 80)
+    print(f"Running edge_pre | model={model_name} | seed={seed}")
+    print(f"Input channels: {in_channels}")
+    print(f"Conv channels: {full_conv_channels}")
+    print(f"Base save path: {base_save_path}")
+    print("=" * 80)
+
+    model_geo(
+        data,
+        th_filter,
+        th_add,
+        th_filter_max,
+        th_filter_min,
+        th_add_max,
+        th_add_min,
+        epoch,
+        base_save_path,
+        gene_map,
+        model_name,
+        full_conv_channels,
+        gene_list,
+        seed=seed
+    )
 
 def main():
     parser = argparse.ArgumentParser(description="Graph Autoencoder Model Training and Prediction")
@@ -141,7 +181,8 @@ def main():
     edge_parser.add_argument('--th_add_min', type=float, default=0.01, help="Minimum threshold for adding edges")
     edge_parser.add_argument('--epoch', type=int, default=1, help="Number of epochs for edge processing")
     edge_parser.add_argument('--gene_list', default="utils/model/gene_list.csv", help="Path to the gene list file")
-
+    edge_parser.add_argument('--seed', type=int, default=42, help="Random seed for a single run")
+    edge_parser.add_argument('--seeds', nargs='+', type=int, default=None, help="Multiple random seeds for repeated runs, e.g. --seeds 42 2024 2025")
     args = parser.parse_args()
 
     if args.command == 'train':
@@ -189,24 +230,30 @@ def main():
             model=args.model
         )
 
+
     elif args.command == 'edge_pre':
-        edge_pre(
-            data_path=args.data_path,
-            feature_dir=args.feature_dir,
-            gene_map_path=args.gene_map_path,
-            model_name=args.model_name,
-            conv_channels=args.conv_channels,
-            th_filter=args.th_filter,
-            th_add=args.th_add,
-            th_filter_max=args.th_filter_max,
-            th_filter_min=args.th_filter_min,
-            th_add_max=args.th_add_max,
-            th_add_min=args.th_add_min,
-            epoch=args.epoch,
-            gene_list=args.gene_list
-        )
+
+        # If --seeds is provided, run multiple repeated experiments.
+        # Otherwise, run only once with --seed.
+        run_seeds = args.seeds if args.seeds is not None else [args.seed]
+        for seed in run_seeds:
+            edge_pre(
+                data_path=args.data_path,
+                feature_dir=args.feature_dir,
+                gene_map_path=args.gene_map_path,
+                model_name=args.model_name,
+                conv_channels=args.conv_channels,
+                th_filter=args.th_filter,
+                th_add=args.th_add,
+                th_filter_max=args.th_filter_max,
+                th_filter_min=args.th_filter_min,
+                th_add_max=args.th_add_max,
+                th_add_min=args.th_add_min,
+                epoch=args.epoch,
+                gene_list=args.gene_list,
+                seed=seed
+            )
 
 
 if __name__ == '__main__':
-    # main()
-    edge_pre("./DATA/model-data/gene.txt",  "./DATA/model-data/expression", "./DATA/model-data/gene_map.txt", "GCN", [8,12,9], 0.48, 0.05, 0.5, 0.01, 0.5, 0.46, 1, "./utils/model/gene_list.csv")
+    main()

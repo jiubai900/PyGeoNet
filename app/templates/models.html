@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .model-top {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .intro-card,
+    .help-card,
+    .panel-card,
+    .status-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .intro-card {
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .intro-title {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.3;
+    }
+
+    .intro-text {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .help-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .help-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .help-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+    }
+
+    .help-list li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .download-link {
+        color: var(--primary-dark);
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .panel-card {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .panel-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .panel-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .panel-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .panel-desc {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        line-height: 1.9;
+        color: var(--text-soft);
+    }
+
+    .section-box {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fbfcfa;
+        margin-bottom: 14px;
+    }
+
+    .section-title {
+        margin: 0 0 14px 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 16px;
+    }
+
+    .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 2px;
+    }
+
+    .field-item.full {
+        grid-column: span 2;
+    }
+
+    .field-item label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+
+    .field-item select,
+    .field-item input[type="file"],
+    .field-item input[type="text"],
+    .field-item input[type="number"] {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .field-item select:focus,
+    .field-item input[type="file"]:focus,
+    .field-item input[type="text"]:focus,
+    .field-item input[type="number"]:focus {
+        outline: none;
+        border-color: #b3c8a6;
+        box-shadow: 0 0 0 4px rgba(66, 107, 42, 0.08);
+    }
+
+    .field-note {
+        font-size: 12px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .status-card {
+        display: none;
+        padding: 14px 16px;
+        background: #f5faef;
+        border-color: #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        min-width: 136px;
+        min-height: 46px;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #5c8444 100%);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(66, 107, 42, 0.18);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #f3f7f0;
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: #eaf3e4;
+    }
+
+    .btn:disabled {
+        background: #dfe8d8;
+        color: #7b8a74;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .footer-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1200px) {
+        .model-top,
+        .panel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .panel-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .fields-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .field-item.full {
+            grid-column: span 1;
+        }
+
+        .button-row {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="model-top">
+    <div class="intro-card">
+        <h1 class="intro-title">分类模型训练与预测</h1>
+        <p class="intro-text">
+            该页面用于执行图模型的训练与预测任务。平台支持上传邻接矩阵和特征矩阵，
+            并根据用户设定的分类数量、训练轮数、学习率、模型类型和损失函数完成模型训练。
+            训练结束后，系统将输出模型参数文件及相关结果文件。
+        </p>
+        <p class="intro-text">
+            在预测功能中，用户可上传已训练完成的模型参数，并结合新的邻接矩阵和特征矩阵进行预测，
+            从而获得对应的分类结果输出。
+        </p>
+    </div>
+
+    <div class="help-card">
+        <h2 class="help-title">输入提示</h2>
+        <ul class="help-list">
+            <li>邻接矩阵输入示例：
+                <a href="../static/DATA/adj_matrix.txt" class="download-link">adj_matrix.txt</a>
+            </li>
+            <li>训练用特征矩阵示例：
+                <a href="../static/DATA/feature_matrix_train.csv" class="download-link">feature_matrix_train.csv</a>
+            </li>
+            <li>预测用特征矩阵示例：
+                <a href="../static/DATA/feature_matrix_pre.csv" class="download-link">feature_matrix_pre.csv</a>
+            </li>
+            <li>训练完成后通常返回模型参数文件和训练相关结果文件。</li>
+            <li>预测阶段支持上传模型参数压缩包或单个参数文件。</li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel-grid">
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>模型训练</h2>
+                <p>Graph model training</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            上传训练所需的邻接矩阵与特征矩阵，并设置模型训练参数后执行训练任务。
+        </p>
+
+        <form id="train-form" action="/train" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件与参数</h3>
+                <div class="fields-grid">
+                    <div class="field-item">
+                        <label for="adj-matrix">邻接矩阵</label>
+                        <input type="file" id="adj-matrix" name="adj_matrix" accept=".txt,.csv">
+                        <div class="field-note">支持 txt 或 csv 格式。</div>
+                    </div>
+
+                    <div class="field-item">
+                        <label for="feature-matrix">特征矩阵</label>
+                        <input type="file" id="feature-matrix" name="feature_matrix" accept=".txt,.csv">
+                        <div class="field-note">需与邻接矩阵中的节点顺序对应。</div>
+                    </div>
+
+                    <div class="field-item">
+                        <label for="class-count">分类数量</label>
+                        <input type="number" id="class-count" name="class_count" placeholder="例如：2" min="1">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="iterations">迭代次数</label>
+                        <input type="number" id="iterations" name="iterations" placeholder="例如：200" min="1">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="learning-rate">学习率</label>
+                        <input type="number" id="learning-rate" name="learning_rate" placeholder="例如：0.01" step="0.0001" min="0">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="model-selection">模型选择</label>
+                        <select id="model-selection" name="model_selection">
+                            <option value="">请选择模型</option>
+                            <option value="GAE">GAE</option>
+                            <option value="GAT">GAT</option>
+                            <option value="GCN">GCN</option>
+                        </select>
+                    </div>
+
+                    <div class="field-item full">
+                        <label for="loss-function">损失函数</label>
+                        <select id="loss-function" name="loss_function">
+                            <option value="">请选择损失函数</option>
+                            <option value="bce">BCE</option>
+                            <option value="mse">MSE</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="trainLoadingMessage" class="status-card">正在执行模型训练，请耐心等待...</div>
+
+            <div class="button-row">
+                <button type="button" id="train-button" class="btn btn-primary" onclick="submitTrainForm()">开始训练</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetTrainForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                训练结束后，系统将自动下载结果压缩包，通常包含模型参数文件及相关输出结果。
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>模型预测</h2>
+                <p>Graph model prediction</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            上传邻接矩阵、特征矩阵和预训练模型参数文件，执行预测任务并输出结果。
+        </p>
+
+        <form id="predict-form" action="/predict" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件与参数</h3>
+                <div class="fields-grid">
+                    <div class="field-item">
+                        <label for="adj-matrix-predict">邻接矩阵</label>
+                        <input type="file" id="adj-matrix-predict" name="adj_matrix" accept=".txt,.csv">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="feature-matrix-predict">特征矩阵</label>
+                        <input type="file" id="feature-matrix-predict" name="feature_matrix" accept=".txt,.csv">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="model-selection-predict">模型选择</label>
+                        <select id="model-selection-predict" name="model_selection">
+                            <option value="">请选择模型</option>
+                            <option value="GAE">GAE</option>
+                            <option value="GAT">GAT</option>
+                            <option value="GCN">GCN</option>
+                        </select>
+                    </div>
+
+                    <div class="field-item">
+                        <label for="class-count-predict">分类数量</label>
+                        <input type="number" id="class-count-predict" name="class_count" placeholder="例如：2" min="1">
+                    </div>
+
+                    <div class="field-item full">
+                        <label for="model-parameters">模型参数</label>
+                        <input type="file" id="model-parameters" name="model_parameters" accept=".zip,.pth,.pt,.pkl,.ckpt">
+                        <div class="field-note">支持上传单个参数文件或包含参数文件的压缩包。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="predictLoadingMessage" class="status-card">正在执行模型预测，请耐心等待...</div>
+
+            <div class="button-row">
+                <button type="button" id="predict-button" class="btn btn-primary" onclick="submitPredictForm()">开始预测</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetPredictForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                预测完成后，系统将自动下载结果压缩包，结果中通常包含模型预测输出文件。
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let trainTimer = null;
+    let predictTimer = null;
+
+    function startLoadingMessage(elementId, baseText, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        let dots = 0;
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = baseText;
+
+        const timer = setInterval(() => {
+            dots = (dots + 1) % 4;
+            loadingMessage.textContent = baseText + '.'.repeat(dots);
+        }, 500);
+
+        if (timerType === 'train') {
+            if (trainTimer) clearInterval(trainTimer);
+            trainTimer = timer;
+        } else {
+            if (predictTimer) clearInterval(predictTimer);
+            predictTimer = timer;
+        }
+    }
+
+    function stopLoadingMessage(elementId, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        loadingMessage.style.display = 'none';
+
+        if (timerType === 'train' && trainTimer) {
+            clearInterval(trainTimer);
+            trainTimer = null;
+        }
+        if (timerType === 'predict' && predictTimer) {
+            clearInterval(predictTimer);
+            predictTimer = null;
+        }
+    }
+
+    async function submitTrainForm() {
+        const form = document.getElementById('train-form');
+        const formData = new FormData(form);
+        const btn = document.getElementById('train-button');
+
+        const adj = document.getElementById('adj-matrix');
+        const feat = document.getElementById('feature-matrix');
+        const classCount = document.getElementById('class-count');
+        const iterations = document.getElementById('iterations');
+        const lr = document.getElementById('learning-rate');
+        const model = document.getElementById('model-selection');
+        const loss = document.getElementById('loss-function');
+
+        if (adj.files.length === 0) {
+            alert('请上传邻接矩阵文件。');
+            return;
+        }
+        if (feat.files.length === 0) {
+            alert('请上传特征矩阵文件。');
+            return;
+        }
+        if (!/^[1-9]\d*$/.test(classCount.value.trim())) {
+            alert('分类数量必须为大于 0 的正整数。');
+            return;
+        }
+        if (!/^[1-9]\d*$/.test(iterations.value.trim())) {
+            alert('迭代次数必须为大于 0 的正整数。');
+            return;
+        }
+        if (lr.value.trim() === '' || Number(lr.value) < 0) {
+            alert('请输入合法的学习率。');
+            return;
+        }
+        if (model.value === '') {
+            alert('请选择模型类型。');
+            return;
+        }
+        if (loss.value === '') {
+            alert('请选择损失函数。');
+            return;
+        }
+
+        btn.disabled = true;
+        startLoadingMessage('trainLoadingMessage', '正在执行模型训练，请耐心等待', 'train');
+
+        try {
+            const response = await fetch('/train', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '模型训练失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'train_result.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('模型训练失败：' + error.message);
+        } finally {
+            stopLoadingMessage('trainLoadingMessage', 'train');
+            btn.disabled = false;
+        }
+    }
+
+    async function submitPredictForm() {
+        const form = document.getElementById('predict-form');
+        const formData = new FormData(form);
+        const btn = document.getElementById('predict-button');
+
+        const adj = document.getElementById('adj-matrix-predict');
+        const feat = document.getElementById('feature-matrix-predict');
+        const modelType = document.getElementById('model-selection-predict');
+        const classCount = document.getElementById('class-count-predict');
+        const params = document.getElementById('model-parameters');
+
+        if (adj.files.length === 0) {
+            alert('请上传邻接矩阵文件。');
+            return;
+        }
+        if (feat.files.length === 0) {
+            alert('请上传特征矩阵文件。');
+            return;
+        }
+        if (modelType.value === '') {
+            alert('请选择模型类型。');
+            return;
+        }
+        if (!/^[1-9]\d*$/.test(classCount.value.trim())) {
+            alert('分类数量必须为大于 0 的正整数。');
+            return;
+        }
+        if (params.files.length === 0) {
+            alert('请上传模型参数文件。');
+            return;
+        }
+
+        btn.disabled = true;
+        startLoadingMessage('predictLoadingMessage', '正在执行模型预测，请耐心等待', 'predict');
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '模型预测失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'predict_result.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('模型预测失败：' + error.message);
+        } finally {
+            stopLoadingMessage('predictLoadingMessage', 'predict');
+            btn.disabled = false;
+        }
+    }
+
+    function resetTrainForm() {
+        document.getElementById('train-form').reset();
+        stopLoadingMessage('trainLoadingMessage', 'train');
+        document.getElementById('train-button').disabled = false;
+    }
+
+    function resetPredictForm() {
+        document.getElementById('predict-form').reset();
+        stopLoadingMessage('predictLoadingMessage', 'predict');
+        document.getElementById('predict-button').disabled = false;
+    }
+
+    document.querySelectorAll('.download-link').forEach(link => {
+        link.addEventListener('click', function () {
+            alert('正在下载示例文件...');
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .super-top {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .intro-card,
+    .help-card,
+    .panel-card,
+    .status-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .intro-card {
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .intro-title {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.3;
+    }
+
+    .intro-text {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .help-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .help-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .help-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+    }
+
+    .help-list li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .download-link {
+        color: var(--primary-dark);
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    .panel-stack {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .panel-card {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .panel-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .panel-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .panel-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .panel-desc {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        line-height: 1.9;
+        color: var(--text-soft);
+    }
+
+    .section-box {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fbfcfa;
+        margin-bottom: 14px;
+    }
+
+    .section-title {
+        margin: 0 0 14px 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 16px;
+    }
+
+    .fields-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px 16px;
+    }
+
+    .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 2px;
+    }
+
+    .field-item.full {
+        grid-column: span 2;
+    }
+
+    .field-item label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+
+    .field-item select,
+    .field-item input[type="file"],
+    .field-item input[type="text"],
+    .field-item input[type="number"] {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .field-item select:focus,
+    .field-item input[type="file"]:focus,
+    .field-item input[type="text"]:focus,
+    .field-item input[type="number"]:focus {
+        outline: none;
+        border-color: #b3c8a6;
+        box-shadow: 0 0 0 4px rgba(66, 107, 42, 0.08);
+    }
+
+    .field-note {
+        font-size: 12px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .status-card {
+        display: none;
+        padding: 14px 16px;
+        background: #f5faef;
+        border-color: #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        min-width: 136px;
+        min-height: 46px;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #5c8444 100%);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(66, 107, 42, 0.18);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #f3f7f0;
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: #eaf3e4;
+    }
+
+    .btn:disabled {
+        background: #dfe8d8;
+        color: #7b8a74;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .footer-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1200px) {
+        .super-top {
+            grid-template-columns: 1fr;
+        }
+
+        .fields-grid-3 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .panel-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .fields-grid,
+        .fields-grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .field-item.full {
+            grid-column: span 1;
+        }
+
+        .button-row {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="super-top">
+    <div class="intro-card">
+        <h1 class="intro-title">关系预测流程与图模型分析</h1>
+        <p class="intro-text">
+            该页面用于完成关系预测相关的前处理与模型推断流程，包括相似度计算、统计筛选以及基因关系预测。
+            用户可先基于多组表达数据计算相似度，再根据统计阈值筛选有效基因集合，最后结合邻接矩阵、
+            表达数据和基因映射文件执行关系预测模型，输出优化后的网络结果。
+        </p>
+        <p class="intro-text">
+            该流程面向图神经网络建模前后的关键步骤进行了统一组织，可作为关系预测模块的前端交互入口，
+            也便于在论文中展示从原始数据到预测网络输出的完整过程。
+        </p>
+    </div>
+
+    <div class="help-card">
+        <h2 class="help-title">输入提示</h2>
+        <ul class="help-list">
+            <li>相似度计算和统计筛选均以压缩后的表达数据目录为主要输入。</li>
+            <li>关系预测阶段需提供邻接矩阵、表达数据压缩包和基因映射文件。</li>
+            <li>若使用默认参数，可直接保留模型名称、卷积通道和训练轮数的默认值。</li>
+            <li>统计阈值、边过滤阈值和边补充阈值通常设置在 0 到 1 之间。</li>
+            <li>示例数据可参考：
+                <a href="../static/DATA/data.zip" class="download-link">data.zip</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel-stack">
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>相似度计算</h2>
+                <p>Similarity calculation for expression data</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            用于对多组原始表达数据进行相似度计算，生成后续统计筛选所需的相似性结果文件。
+        </p>
+
+        <form id="similarity-form" action="/similarity" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件与参数</h3>
+                <div class="fields-grid">
+                    <div class="field-item">
+                        <label for="similarity-file">原始表达数据</label>
+                        <input type="file" id="similarity-file" name="sim_file-input" accept=".zip">
+                        <div class="field-note">推荐上传包含多个表达文件的 zip 压缩包。</div>
+                    </div>
+
+                    <div class="field-item">
+                        <label for="similarity-threshold">相似度阈值</label>
+                        <input type="number" id="similarity-threshold" name="sim_th" placeholder="例如：0.3" step="0.1" min="0" max="1">
+                        <div class="field-note">请输入 0 到 1 之间的阈值。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="similarityLoadingMessage" class="status-card">正在执行相似度计算，请耐心等待...</div>
+
+            <div class="button-row">
+                <button type="button" id="similarity-btn" class="btn btn-primary" onclick="submitSimilarityForm()">计算相似度</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetSimilarityForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                计算完成后，系统将自动下载相似度结果压缩包。
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>统计筛选</h2>
+                <p>Statistical screening of candidate genes</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            用于读取相似度计算结果和原始表达数据，根据设定阈值筛选候选基因集合，为后续图模型分析提供统一输入。
+        </p>
+
+        <form id="statistic-form" action="/statistic" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件与参数</h3>
+                <div class="fields-grid">
+                    <div class="field-item">
+                        <label for="statistic-sim-file">相似值数据</label>
+                        <input type="file" id="statistic-sim-file" name="sim_file-input" accept=".zip">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="statistic-raw-file">原始表达数据</label>
+                        <input type="file" id="statistic-raw-file" name="sta_file-input" accept=".zip">
+                    </div>
+
+                    <div class="field-item full">
+                        <label for="statistic-threshold">统计阈值</label>
+                        <input type="number" id="statistic-threshold" name="con_th" placeholder="例如：0.8" step="0.1" min="0" max="1">
+                        <div class="field-note">该阈值用于控制筛选出的候选基因关系范围。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statisticLoadingMessage" class="status-card">正在执行统计筛选，请耐心等待...</div>
+
+            <div class="button-row">
+                <button type="button" id="statistic-btn" class="btn btn-primary" onclick="submitStatisticForm()">执行筛选</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetStatisticForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                筛选完成后，系统将自动下载统计结果压缩包。
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>候选基因关系边预测</h2>
+                <p>Gene relationship prediction based on graph model</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            用于基于邻接矩阵、表达数据和基因映射信息执行关系预测模型，并根据边过滤与边补充策略输出优化网络结果。
+        </p>
+
+        <form id="edge-form" action="/edge" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件</h3>
+                <div class="fields-grid">
+                    <div class="field-item">
+                        <label for="edge-adj-file">邻接矩阵</label>
+                        <input type="file" id="edge-adj-file" name="adj_file-input" accept=".txt,.csv">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-expression-file">表达数据</label>
+                        <input type="file" id="edge-expression-file" name="expr_file-input" accept=".zip">
+                    </div>
+
+                    <div class="field-item full">
+                        <label for="edge-map-file">基因映射文件</label>
+                        <input type="file" id="edge-map-file" name="map_file-input" accept=".txt,.csv">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3 class="section-title">模型与阈值参数</h3>
+                <div class="fields-grid-3">
+                    <div class="field-item">
+                        <label for="edge-th-con">统计阈值</label>
+                        <input type="number" id="edge-th-con" name="th_con" placeholder="0.8" min="0" max="1" step="0.1">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-model-name">模型名称</label>
+                        <select id="edge-model-name" name="model_name">
+                            <option value="GCN">GCN</option>
+                            <option value="GAT">GAT</option>
+                            <option value="GAE">GAE</option>
+                        </select>
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-conv-channels">卷积通道</label>
+                        <input type="text" id="edge-conv-channels" name="conv_channels" placeholder="例如：8,12,9" value="8,12,9">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-th-filter">边过滤初始阈值</label>
+                        <input type="number" id="edge-th-filter" name="th_filter" placeholder="0.1" min="0" max="1" step="0.001">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-f-max">过滤最大阈值</label>
+                        <input type="number" id="edge-f-max" name="f_max" placeholder="0.5" min="0" max="1" step="0.02">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-f-min">过滤最小阈值</label>
+                        <input type="number" id="edge-f-min" name="f_min" placeholder="0" min="0" max="1" step="0.01">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-th-add">边补充初始阈值</label>
+                        <input type="number" id="edge-th-add" name="th_add" placeholder="0.1" min="0" max="1" step="0.02">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-a-max">补充最大阈值</label>
+                        <input type="number" id="edge-a-max" name="a_max" placeholder="0.5" min="0"  max="1" step="0.001">
+                    </div>
+
+                    <div class="field-item">
+                        <label for="edge-a-min">补充最小阈值</label>
+                        <input type="number" id="edge-a-min" name="a_min" placeholder="0" min="0" max="1" step="0.02">
+                    </div>
+
+                    <div class="field-item full">
+                        <label for="edge-epoch">训练轮数</label>
+                        <input type="number" id="edge-epoch" name="epoch" placeholder="例如：1" min="1" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <div id="edgeLoadingMessage" class="status-card">正在执行关系预测，请耐心等待...</div>
+
+            <div class="button-row">
+                <button type="button" id="edge-btn" class="btn btn-primary" onclick="submitEdgeForm()">开始预测</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetEdgeForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                预测完成后，系统将自动下载关系预测结果压缩包。
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let similarityTimer = null;
+    let statisticTimer = null;
+    let edgeTimer = null;
+
+    function startLoadingMessage(elementId, baseText, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        let dots = 0;
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = baseText;
+
+        const timer = setInterval(() => {
+            dots = (dots + 1) % 4;
+            loadingMessage.textContent = baseText + '.'.repeat(dots);
+        }, 500);
+
+        if (timerType === 'similarity') {
+            if (similarityTimer) clearInterval(similarityTimer);
+            similarityTimer = timer;
+        } else if (timerType === 'statistic') {
+            if (statisticTimer) clearInterval(statisticTimer);
+            statisticTimer = timer;
+        } else {
+            if (edgeTimer) clearInterval(edgeTimer);
+            edgeTimer = timer;
+        }
+    }
+
+    function stopLoadingMessage(elementId, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        loadingMessage.style.display = 'none';
+
+        if (timerType === 'similarity' && similarityTimer) {
+            clearInterval(similarityTimer);
+            similarityTimer = null;
+        } else if (timerType === 'statistic' && statisticTimer) {
+            clearInterval(statisticTimer);
+            statisticTimer = null;
+        } else if (timerType === 'edge' && edgeTimer) {
+            clearInterval(edgeTimer);
+            edgeTimer = null;
+        }
+    }
+
+    async function submitSimilarityForm() {
+        const form = document.getElementById('similarity-form');
+        const formData = new FormData(form);
+        const btn = document.getElementById('similarity-btn');
+        const fileInput = document.getElementById('similarity-file');
+        const thresholdInput = document.getElementById('similarity-threshold');
+
+        if (fileInput.files.length === 0) {
+            alert('请上传原始表达数据压缩包。');
+            return;
+        }
+        if (thresholdInput.value.trim() === '') {
+            alert('请输入相似度阈值。');
+            return;
+        }
+
+        btn.disabled = true;
+        startLoadingMessage('similarityLoadingMessage', '正在执行相似度计算，请耐心等待', 'similarity');
+
+        try {
+            const response = await fetch('/similarity', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '相似度计算失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'data_similarity.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('相似度计算失败：' + error.message);
+        } finally {
+            stopLoadingMessage('similarityLoadingMessage', 'similarity');
+            btn.disabled = false;
+        }
+    }
+
+    async function submitStatisticForm() {
+        const form = document.getElementById('statistic-form');
+        const formData = new FormData(form);
+        const btn = document.getElementById('statistic-btn');
+        const simInput = document.getElementById('statistic-sim-file');
+        const rawInput = document.getElementById('statistic-raw-file');
+        const thresholdInput = document.getElementById('statistic-threshold');
+
+        if (simInput.files.length === 0) {
+            alert('请上传相似值数据压缩包。');
+            return;
+        }
+        if (rawInput.files.length === 0) {
+            alert('请上传原始表达数据压缩包。');
+            return;
+        }
+        if (thresholdInput.value.trim() === '') {
+            alert('请输入统计阈值。');
+            return;
+        }
+
+        btn.disabled = true;
+        startLoadingMessage('statisticLoadingMessage', '正在执行统计筛选，请耐心等待', 'statistic');
+
+        try {
+            const response = await fetch('/statistic', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '统计筛选失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'data_statistic.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('统计筛选失败：' + error.message);
+        } finally {
+            stopLoadingMessage('statisticLoadingMessage', 'statistic');
+            btn.disabled = false;
+        }
+    }
+
+    async function submitEdgeForm() {
+        const form = document.getElementById('edge-form');
+        const formData = new FormData(form);
+        const btn = document.getElementById('edge-btn');
+
+        const adjInput = document.getElementById('edge-adj-file');
+        const exprInput = document.getElementById('edge-expression-file');
+        const mapInput = document.getElementById('edge-map-file');
+
+        const thCon = document.getElementById('edge-th-con');
+        const thFilter = document.getElementById('edge-th-filter');
+        const fMax = document.getElementById('edge-f-max');
+        const fMin = document.getElementById('edge-f-min');
+        const thAdd = document.getElementById('edge-th-add');
+        const aMax = document.getElementById('edge-a-max');
+        const aMin = document.getElementById('edge-a-min');
+        const epoch = document.getElementById('edge-epoch');
+
+        if (adjInput.files.length === 0 || exprInput.files.length === 0 || mapInput.files.length === 0) {
+            alert('请完整上传邻接矩阵、表达数据和基因映射文件。');
+            return;
+        }
+
+        if (
+            thCon.value.trim() === '' ||
+            thFilter.value.trim() === '' ||
+            fMax.value.trim() === '' ||
+            fMin.value.trim() === '' ||
+            thAdd.value.trim() === '' ||
+            aMax.value.trim() === '' ||
+            aMin.value.trim() === '' ||
+            epoch.value.trim() === ''
+        ) {
+            alert('请完整填写关系预测参数。');
+            return;
+        }
+
+        btn.disabled = true;
+        startLoadingMessage('edgeLoadingMessage', '正在执行关系预测，请耐心等待', 'edge');
+
+        try {
+            const response = await fetch('/edge', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '关系预测失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'edge_model.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('关系预测失败：' + error.message);
+        } finally {
+            stopLoadingMessage('edgeLoadingMessage', 'edge');
+            btn.disabled = false;
+        }
+    }
+
+    function resetSimilarityForm() {
+        document.getElementById('similarity-form').reset();
+        stopLoadingMessage('similarityLoadingMessage', 'similarity');
+        document.getElementById('similarity-btn').disabled = false;
+    }
+
+    function resetStatisticForm() {
+        document.getElementById('statistic-form').reset();
+        stopLoadingMessage('statisticLoadingMessage', 'statistic');
+        document.getElementById('statistic-btn').disabled = false;
+    }
+
+    function resetEdgeForm() {
+        document.getElementById('edge-form').reset();
+        document.getElementById('edge-model-name').value = 'GCN';
+        document.getElementById('edge-conv-channels').value = '8,12,9';
+        document.getElementById('edge-epoch').value = '1';
+        stopLoadingMessage('edgeLoadingMessage', 'edge');
+        document.getElementById('edge-btn').disabled = false;
+    }
+
+    document.querySelectorAll('.download-link').forEach(link => {
+        link.addEventListener('click', function () {
+            alert('正在下载示例文件...');
+        });
+    });
+</script>
+{% endblock %}

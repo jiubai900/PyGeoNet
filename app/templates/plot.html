@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .plot-top {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .intro-card,
+    .help-card,
+    .panel-card,
+    .status-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .intro-card {
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .intro-title {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.3;
+    }
+
+    .intro-text {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .help-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .help-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .help-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+    }
+
+    .help-list li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .download-link {
+        color: var(--primary-dark);
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    .analysis-panel {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .panel-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .panel-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .panel-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .panel-desc {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        line-height: 1.9;
+        color: var(--text-soft);
+    }
+
+    .section-box {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fbfcfa;
+        margin-bottom: 14px;
+    }
+
+    .section-title {
+        margin: 0 0 14px 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 16px;
+    }
+
+    .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 2px;
+    }
+
+    .field-item.full {
+        grid-column: span 2;
+    }
+
+    .field-item label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+
+    .field-item select,
+    .field-item input[type="file"],
+    .field-item input[type="text"],
+    .field-item input[type="number"] {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .field-item select:focus,
+    .field-item input[type="file"]:focus,
+    .field-item input[type="text"]:focus,
+    .field-item input[type="number"]:focus {
+        outline: none;
+        border-color: #b3c8a6;
+        box-shadow: 0 0 0 4px rgba(66, 107, 42, 0.08);
+    }
+
+    .field-note {
+        font-size: 12px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .status-card {
+        display: none;
+        padding: 14px 16px;
+        background: #f5faef;
+        border-color: #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        min-width: 136px;
+        min-height: 46px;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #5c8444 100%);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(66, 107, 42, 0.18);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #f3f7f0;
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: #eaf3e4;
+    }
+
+    .btn:disabled {
+        background: #dfe8d8;
+        color: #7b8a74;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .footer-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1200px) {
+        .plot-top {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .panel-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .fields-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .field-item.full {
+            grid-column: span 1;
+        }
+
+        .button-row {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="plot-top">
+    <div class="intro-card">
+        <h1 class="intro-title">差异分析与图形输出</h1>
+        <p class="intro-text">
+            该页面用于对标准化后的基因表达数据执行差异分析及结果可视化。平台当前支持火山图、
+            箱线图、热图、聚类图和富集图等常见图形输出，可为后续结果展示和生物学解释提供直观依据。
+        </p>
+        <p class="intro-text">
+            用户可根据分析类型上传对应数据文件，并在需要时补充基因编号或聚类数量等参数。
+            系统完成分析后将自动输出压缩结果文件，便于统一下载和归档。
+        </p>
+    </div>
+
+    <div class="help-card">
+        <h2 class="help-title">使用提示</h2>
+        <ul class="help-list">
+            <li>当前支持火山图、箱线图、热图、聚类图和富集图 5 类分析。</li>
+            <li>输入数据目前使用 txt 文件，示例文件可下载参考。</li>
+            <li>数据第二行应包含样本分组信息，这是差异分析的必要输入。</li>
+            <li>当分析类型为箱线图时，需要输入基因 ID。</li>
+            <li>当分析类型为聚类图时，需要输入聚类数量。</li>
+            <li>
+                示例文件下载：
+                <a href="../static/DATA/GSE11151.txt" class="download-link">GSE11151.txt</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="analysis-panel">
+    <div class="panel-head">
+        <div>
+            <h2>分析参数配置</h2>
+            <p>Plot generation parameter configuration</p>
+        </div>
+    </div>
+
+    <p class="panel-desc">
+        请选择分析类别并上传数据文件。系统将根据分析任务自动启用或禁用相关参数输入框。
+    </p>
+
+    <form id="plot-form" action="/get-plot" method="post" enctype="multipart/form-data">
+        <div class="section-box">
+            <h3 class="section-title">输入信息</h3>
+            <div class="fields-grid">
+                <div class="field-item">
+                    <label for="analysis-type">分析类别</label>
+                    <select id="analysis-type" name="analysis-type" onchange="updateInputs()">
+                        <option value="">请选择分析类别</option>
+                        <option value="volcano">火山图</option>
+                        <option value="boxplot">箱线图</option>
+                        <option value="heatmap">热图</option>
+                        <option value="clustering">聚类图</option>
+                        <option value="enrichment">富集图</option>
+                    </select>
+                    <div class="field-note">请选择需要输出的图形类别。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="file-input">数据文件上传</label>
+                    <input type="file" id="file-input" name="file-input" accept=".txt">
+                    <div class="field-note">当前示例流程以 txt 格式表达数据文件为输入。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="gene-id">基因 ID</label>
+                    <input type="text" id="gene-id" name="gene-id" placeholder="例如：2060" disabled>
+                    <div class="field-note">仅在箱线图分析时启用。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="cluster-count">聚类数量</label>
+                    <input type="number" id="cluster-count" name="cluster-count" placeholder="例如：3" min="1" disabled>
+                    <div class="field-note">仅在聚类图分析时启用。</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingMessage" class="status-card">正在生成图形结果，请耐心等待...</div>
+
+        <div class="button-row">
+            <button type="button" class="btn btn-primary" id="generate-btn" onclick="submitPlotForm()">生成图形</button>
+            <button type="reset" class="btn btn-secondary" onclick="resetPlotForm()">重置内容</button>
+        </div>
+
+        <div class="footer-note">
+            分析完成后，系统将自动下载压缩结果文件；不同分析类型对应的输出图件与结果文件可能有所不同。
+        </div>
+    </form>
+</div>
+
+<script>
+    let plotTimer = null;
+
+    function updateInputs() {
+        const analysisType = document.getElementById('analysis-type').value;
+        const geneIdInput = document.getElementById('gene-id');
+        const clusterCountInput = document.getElementById('cluster-count');
+
+        geneIdInput.disabled = true;
+        clusterCountInput.disabled = true;
+        geneIdInput.value = geneIdInput.disabled ? geneIdInput.value : geneIdInput.value;
+        clusterCountInput.value = clusterCountInput.disabled ? clusterCountInput.value : clusterCountInput.value;
+
+        if (analysisType === 'boxplot') {
+            geneIdInput.disabled = false;
+        } else if (analysisType === 'clustering') {
+            clusterCountInput.disabled = false;
+        }
+    }
+
+    function startLoadingMessage() {
+        const loadingMessage = document.getElementById('loadingMessage');
+        let dots = 0;
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = '正在生成图形结果，请耐心等待';
+
+        if (plotTimer) {
+            clearInterval(plotTimer);
+        }
+
+        plotTimer = setInterval(() => {
+            dots = (dots + 1) % 4;
+            loadingMessage.textContent = '正在生成图形结果，请耐心等待' + '.'.repeat(dots);
+        }, 500);
+    }
+
+    function stopLoadingMessage() {
+        const loadingMessage = document.getElementById('loadingMessage');
+        loadingMessage.style.display = 'none';
+
+        if (plotTimer) {
+            clearInterval(plotTimer);
+            plotTimer = null;
+        }
+    }
+
+    async function submitPlotForm() {
+        const form = document.getElementById('plot-form');
+        const formData = new FormData(form);
+        const generateBtn = document.getElementById('generate-btn');
+        const typeInput = document.getElementById('analysis-type');
+        const fileInput = document.getElementById('file-input');
+        const geneIdInput = document.getElementById('gene-id');
+        const clusterCountInput = document.getElementById('cluster-count');
+
+        if (typeInput.value === '') {
+            alert('请选择分析类别。');
+            return;
+        }
+
+        if (fileInput.files.length === 0) {
+            alert('请上传数据文件。');
+            return;
+        }
+
+        if (typeInput.value === 'boxplot' && geneIdInput.value.trim() === '') {
+            alert('箱线图分析需要输入基因 ID。');
+            return;
+        }
+
+        if (typeInput.value === 'clustering') {
+            const clusterValue = clusterCountInput.value.trim();
+            if (clusterValue === '') {
+                alert('聚类图分析需要输入聚类数量。');
+                return;
+            }
+            if (!/^[1-9]\d*$/.test(clusterValue)) {
+                alert('聚类数量必须为大于 0 的正整数。');
+                return;
+            }
+        }
+
+        generateBtn.disabled = true;
+        startLoadingMessage();
+
+        try {
+            const response = await fetch('/get-plot', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '图形生成失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'plot_result.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('图形生成失败：' + error.message);
+        } finally {
+            stopLoadingMessage();
+            generateBtn.disabled = false;
+        }
+    }
+
+    function resetPlotForm() {
+        document.getElementById('plot-form').reset();
+        document.getElementById('gene-id').disabled = true;
+        document.getElementById('cluster-count').disabled = true;
+        stopLoadingMessage();
+        document.getElementById('generate-btn').disabled = false;
+    }
+
+    document.querySelector('.download-link').addEventListener('click', function () {
+        alert('正在下载 GSE11151.txt 示例文件...');
+    });
+</script>
+{% endblock %}

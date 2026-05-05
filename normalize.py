@@ -1,7 +1,7 @@
 import os
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-from utils.normalize.tool import sum_get_data
+from utils.normalize.tool import sum_get_data, normalize_log
 
 
 def get_data(raw_data_path, gpl_path='', save_path='./', thread=4, single_operation=False):
@@ -18,8 +18,14 @@ def get_data(raw_data_path, gpl_path='', save_path='./', thread=4, single_operat
     Returns:
     No return value.
     """
+    normalize_log("Normalize module started.")
+    normalize_log(
+        f"Input arguments: raw_data_path={raw_data_path}, gpl_path={gpl_path}, "
+        f"save_path={save_path}, thread={thread}, single_operation={single_operation}"
+    )
+
     if not raw_data_path:
-        print("Path is empty")
+        normalize_log("Path is empty. Stop normalize module.")
         return
 
     if not os.path.isabs(raw_data_path):
@@ -28,29 +34,59 @@ def get_data(raw_data_path, gpl_path='', save_path='./', thread=4, single_operat
         save_path = os.path.abspath(save_path)
     if not os.path.isabs(gpl_path):
         gpl_path = os.path.abspath(gpl_path)
+
+    normalize_log(f"Resolved raw_data_path: {raw_data_path}")
+    normalize_log(f"Resolved gpl_path: {gpl_path}")
+    normalize_log(f"Resolved save_path: {save_path}")
+
     if not os.path.exists(save_path):
         os.makedirs(save_path)
+        normalize_log(f"Created save directory: {save_path}")
 
     if single_operation:
+        normalize_log(f"Single-operation mode: processing {raw_data_path}")
         sum_get_data(raw_data_path, gpl_path, save_path)
+        normalize_log("Normalize module finished in single-operation mode.")
 
     elif not single_operation:
-        # Check if the path exists
         if os.path.exists(raw_data_path):
-            # Traverse all files and directories under the path
-            # Use a thread pool to execute data retrieval tasks
-            with ThreadPoolExecutor(max_workers=thread) as executor:
-                for root, dirs, files in os.walk(raw_data_path):
-                    # Submit a task for each directory
-                    for d in dirs:
-                        executor.submit(sum_get_data, os.path.join(root, d), gpl_path, save_path)
-                    # Wait for all threads to complete
-                    executor.shutdown(wait=True)
-                    # Stop traversal after finding the first matching path
-                    break
+            dataset_dirs = []
+            for root, dirs, files in os.walk(raw_data_path):
+                dataset_dirs = [os.path.join(root, d) for d in dirs]
+                break
+
+            normalize_log(f"Batch mode: found {len(dataset_dirs)} first-level dataset directories.")
+
+            if not dataset_dirs:
+                normalize_log("No dataset directory found. Stop normalize module.")
+                return
+
+            max_workers = max(1, int(thread))
+            normalize_log(f"Submitting normalize tasks with max_workers={max_workers}.")
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {
+                    executor.submit(sum_get_data, dataset_dir, gpl_path, save_path): dataset_dir
+                    for dataset_dir in dataset_dirs
+                }
+
+                for future in as_completed(futures):
+                    dataset_dir = futures[future]
+                    dataset_name = os.path.basename(dataset_dir)
+
+                    try:
+                        future.result()
+                        normalize_log(f"Task finished: {dataset_name}")
+                    except Exception as exc:
+                        normalize_log(f"Task failed: {dataset_name}. Error: {exc}")
+
+            normalize_log("Normalize module finished in batch mode.")
+        else:
+            normalize_log(f"Raw data path does not exist: {raw_data_path}")
+            return
 
     else:
-        print("Parameter error")
+        normalize_log("Parameter error. Stop normalize module.")
         return
 
 

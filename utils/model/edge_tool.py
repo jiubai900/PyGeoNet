@@ -9,11 +9,34 @@ import torch.nn.functional as F
 from torch_geometric.nn import SAGEConv, ChebConv, GINConv, GATConv, GCNConv
 import torch.optim as optim
 from scipy.sparse import coo_matrix, lil_matrix
-
+import random
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+def set_seed(seed: int = 42):
+    """
+    固定随机种子，用于多次重复实验。
+    主要控制：Python随机数、NumPy随机数、PyTorch参数初始化、Dropout、CUDA随机性。
+    """
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    random.seed(seed)
+    np.random.seed(seed)
+
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    # 尽量提高CUDA结果可复现性
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # PyTorch版本支持时启用；warn_only=True避免部分PyG算子直接报错
+    try:
+        torch.use_deterministic_algorithms(True, warn_only=True)
+    except Exception:
+        pass
 
 def add_self_loops(edge_index, num_nodes):
     loop_index = torch.arange(0, num_nodes, dtype=torch.long, device=edge_index.device)
@@ -347,7 +370,12 @@ def initialize_weights_to_zeros(m):
 
 
 def model_geo(train_data, threshold_f, threshold_a, th_filter_max, th_filter_min, th_add_max, th_add_min, epoch_num,
-              save_path, gene_map, model_name, conv_channels, gene_list):
+              save_path, gene_map, model_name, conv_channels, gene_list, seed=42):
+    set_seed(seed)
+
+    # 每个模型、每个seed单独一个输出目录，避免结果互相覆盖
+
+    os.makedirs(save_path, exist_ok=True)
     # Model variable initialisation
     # Model Instantiation
     global model  # Declare model as a global variable
@@ -359,7 +387,7 @@ def model_geo(train_data, threshold_f, threshold_a, th_filter_max, th_filter_min
         model = DynamicChebNet(conv_channels).to(device)
     elif model_name == 'GCN':
         model = DynamicGCN(conv_channels).to(device)
-    model.apply(initialize_weights_to_zeros)
+    # model.apply(initialize_weights_to_zeros)
     # parameterisation
     optimizer = optim.Adam(model.parameters(), lr=3e-2, weight_decay=3e-4)
     criterion = CosineSimilarityLoss().to(device)
@@ -377,10 +405,10 @@ def model_geo(train_data, threshold_f, threshold_a, th_filter_max, th_filter_min
         loss_num.append(loss_result)
         print(f'Epoch: {epoch:03d}, Loss: {loss_result:.4f}')
     # Saving model parameters
-    torch.save(model.state_dict(), 'model_first_phase.pth')
+    checkpoint_path = os.path.join(save_path, f'model_first_phase_{model_name}_seed{seed}.pth')
+    torch.save(model.state_dict(), checkpoint_path)
 
-    # Phase 2: Load model parameters and train with smaller learning rates and new weight decays
-    model.load_state_dict(torch.load('model_first_phase.pth'))
+    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
     # Modifying the learning rate and weight decay of the optimiser
     optimizer = optim.Adam(model.parameters(), lr=3e-4, weight_decay=3e-6)
 
@@ -425,9 +453,9 @@ def model_geo(train_data, threshold_f, threshold_a, th_filter_max, th_filter_min
                                               train_data, model, criterion, save_path, epoch)
         edge_num_all.append(train_data.edge_index.size(1))
         if loss_result == -1:
-            loss_result = loss_all[-1]
+            loss_result = loss_all[-1] if loss_all else loss_num[-1]
             loss_all.append(loss_result)
-        elif loss_result != -1:
+        else:
             loss_all.append(loss_result)
 
         print('loss_result after deletion of edges:', loss_result)
@@ -449,9 +477,9 @@ def model_geo(train_data, threshold_f, threshold_a, th_filter_max, th_filter_min
         # The result is output to a file later.
         edge_num_all.append(train_data.edge_index.size(1))
         if loss_result == -1:
-            loss_result = loss_all[-1]
+            loss_result = loss_all[-1] if loss_all else loss_num[-1]
             loss_all.append(loss_result)
-        elif loss_result != -1:
+        else:
             loss_all.append(loss_result)
     print('loss_all:', loss_all)
     print('edge_num_all:', edge_num_all)

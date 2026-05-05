@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .hero-card,
+    .feature-card,
+    .metric-card,
+    .module-card,
+    .flow-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .hero-card {
+        padding: 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .hero-title {
+        margin: 0 0 14px 0;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.3;
+        color: var(--primary-dark);
+    }
+
+    .hero-text {
+        margin: 0 0 18px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hero-tag {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .feature-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .feature-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .feature-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-soft);
+    }
+
+    .feature-list li {
+        margin-bottom: 10px;
+        line-height: 1.9;
+        font-size: 15px;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .metric-card {
+        padding: 20px 18px;
+        text-align: left;
+    }
+
+    .metric-label {
+        font-size: 14px;
+        color: var(--text-soft);
+        margin-bottom: 10px;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+
+    .metric-note {
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .modules-section {
+        margin-bottom: 22px;
+    }
+
+    .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .section-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .module-card {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .module-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 800;
+        margin-bottom: 14px;
+    }
+
+    .module-title {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .module-text {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.9;
+        color: var(--text-soft);
+    }
+
+    .flow-card {
+        padding: 24px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbf6 100%);
+    }
+
+    .flow-title {
+        margin: 0 0 16px 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .flow-row {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        align-items: center;
+    }
+
+    .flow-step {
+        min-height: 92px;
+        padding: 16px 14px;
+        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.7;
+        box-shadow: 0 4px 10px rgba(31, 41, 55, 0.04);
+    }
+
+    .flow-step.highlight {
+        background: linear-gradient(135deg, #eef5e8 0%, #f8fbf6 100%);
+        border-color: #c9dbc0;
+    }
+
+    @media (max-width: 1200px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .metrics-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .modules-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .flow-row {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 760px) {
+        .metrics-grid,
+        .modules-grid,
+        .flow-row {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            font-size: 24px;
+        }
+
+        .feature-title,
+        .flow-title,
+        .section-head h2 {
+            font-size: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="hero-grid">
+    <div class="hero-card">
+        <h1 class="hero-title">平台首页总览</h1>
+        <p class="hero-text">
+            PyGeoNet 转录组自动化分析平台面向 GEO 公共数据库中的转录组数据分析任务构建，
+            以“数据检索—数据下载—数据规范化—差异分析—候选基因关系边预测—通路映射”为主线，
+            将原本分散的处理步骤整合为可视化、可复用的一体化分析流程。
+            平台支持上传数据、参数配置、任务执行以及结果导出，可为转录组数据分析提供统一的前端交互入口。
+        </p>
+        <div class="hero-tags">
+            <span class="hero-tag">GEO 数据检索</span>
+            <span class="hero-tag">失败重下载</span>
+            <span class="hero-tag">表达矩阵重建</span>
+            <span class="hero-tag">差异分析</span>
+            <span class="hero-tag">候选基因关系边预测</span>
+            <span class="hero-tag">通路映射</span>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <h2 class="feature-title">平台特点</h2>
+        <ul class="feature-list">
+            <li>支持按关键词和条件筛选 GEO 数据集，并导出候选结果。</li>
+            <li>支持常见 GEO 资源的批量下载与日志驱动的失败重下载。</li>
+            <li>支持 series matrix 与补充数据的多来源表达矩阵重建。</li>
+            <li>支持样本对齐、基因统一、重复记录聚合与缺失值处理。</li>
+            <li>支持差异分析、图形绘制、关系预测与结果压缩导出。</li>
+        </ul>
+    </div>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">功能模块</div>
+        <div class="metric-value">7</div>
+        <div class="metric-note">涵盖从数据获取到预测分析的完整流程</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">流程组织方式</div>
+        <div class="metric-value">端到端</div>
+        <div class="metric-note">前后阶段衔接明确，支持任务化处理</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">结果输出形式</div>
+        <div class="metric-value">ZIP</div>
+        <div class="metric-note">统一封装分析结果，便于下载与归档</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">应用定位</div>
+        <div class="metric-value">科研辅助</div>
+        <div class="metric-note">服务于转录组自动化分析与结果展示</div>
+    </div>
+</div>
+
+<div class="modules-section">
+    <div class="section-head">
+        <h2>核心功能模块</h2>
+        <p>Core functional modules of the platform</p>
+    </div>
+    <div class="modules-grid">
+        <div class="module-card">
+            <div class="module-index">01</div>
+            <h3 class="module-title">数据检索模块</h3>
+            <p class="module-text">
+                支持面向 GEO 数据集的条件化检索，并输出结构化候选结果，为后续下载与分析提供数据入口。
+            </p>
+        </div>
+        <div class="module-card">
+            <div class="module-index">02</div>
+            <h3 class="module-title">数据下载模块</h3>
+            <p class="module-text">
+                支持矩阵文件、平台注释文件、补充数据等内容的批量下载，并通过日志记录实现失败条目重下载。
+            </p>
+        </div>
+        <div class="module-card">
+            <div class="module-index">03</div>
+            <h3 class="module-title">数据规范化模块</h3>
+            <p class="module-text">
+                支持表达矩阵重建、样本名对齐、基因统一、重复值聚合和缺失值处理，输出标准输入数据。
+            </p>
+        </div>
+        <div class="module-card">
+            <div class="module-index">04</div>
+            <h3 class="module-title">差异分析模块</h3>
+            <p class="module-text">
+                支持差异表达分析及相关图件生成，包括火山图、箱线图、热图、聚类图与富集分析图。
+            </p>
+        </div>
+        <div class="module-card">
+            <div class="module-index">05</div>
+            <h3 class="module-title">分类模型模块</h3>
+            <p class="module-text">
+                提供图卷积模型训练与预测接口，可作为图结构建模与实验性分类任务的前端入口。
+            </p>
+        </div>
+        <div class="module-card">
+            <div class="module-index">06</div>
+            <h3 class="module-title">候选基因关系边预测模块</h3>
+            <p class="module-text">
+                通过图神经网络学习基因潜在关系，并结合边过滤与边补充策略生成优化网络结果。
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="flow-card">
+    <h2 class="flow-title">平台分析流程</h2>
+    <div class="flow-row">
+        <div class="flow-step highlight">数据检索</div>
+        <div class="flow-step">数据下载</div>
+        <div class="flow-step">数据规范化</div>
+        <div class="flow-step">差异分析</div>
+        <div class="flow-step">候选基因关系边预测</div>
+        <div class="flow-step highlight">结果导出与展示</div>
+    </div>
+</div>
+{% endblock %}

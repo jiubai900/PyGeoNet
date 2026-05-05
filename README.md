@@ -412,6 +412,8 @@ Mainly used for node classification training, it provides a wide choice of graph
         - `--th_add_max`: Increases the maximum threshold for edges, with a default value of `0.5`.
         - `--th_add_min`: Increases the minimum threshold for edges, with a default value of `0.01`.
         - `--epoch`: The number of iterations, default value is `1`.
+        - `--seed`: Random seed for a single run. It controls Python, NumPy, PyTorch, CUDA and dropout-related randomness. Default value is `42`.
+        - `--seeds`: A list of random seeds for repeated experiments, e.g. `--seeds 42 2024 2025 2026 3407`. When this parameter is provided, the program will run the same model sequentially under multiple random seeds and save results into independent output folders.
 ----
 #### sample code (computing)
 
@@ -424,11 +426,12 @@ python model.py train --adj_matrix_path './DATA/example/adj_matrix.txt' --featur
 python model.py predict --adj_matrix_path './DATA/example/adj_matrix.txt' --feature_matrix_path './DATA/example/feature_matrix_pre.csv' --model_path './DATA/example/model.pth' --num_classes 3 --output_path './DATA/example' --model GAEModel
 
 # Side prediction model
-python model.py edge_pre --data_path "./DATA/model-data/gene.txt" --feature_dir './DATA/model-data/expression' --gene_map_path "./DATA/model-data/gene_map.txt" --model_name 'GCN' --conv_channels 8 12 9 --th_filter '0.1' --th_add '0.1'
+# Single-seed run
+python model.py edge_pre  --data_path "./DATA/model-data/gene.txt"  --feature_dir "./DATA/model-data/expression"  --gene_map_path "./DATA/model-data/gene_map.txt" --model_name GCN --conv_channels 8 12 9 --th_filter 0.1 --th_add 0.1 --seed 42
+# Multi-seed repeated run
+python model.py edge_pre --data_path "./DATA/model-data/gene.txt" --feature_dir "./DATA/model-data/expression" --gene_map_path "./DATA/model-data/gene_map.txt" --model_name GCN  --conv_channels 8 12 9  --th_filter 0.1 --th_add 0.1  --seeds 42 2024 2025 2026 3407
 
-```
-
-Here you can call cuda to accelerate, because the system environment is not the same so here is the installation tutorial.
+# Here you can call cuda to accelerate, because the system environment is not the same so here is the installation tutorial.
 
 ```
 - Step 1: Check the CUDA version

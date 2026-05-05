@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .search-top {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .intro-card,
+    .tip-card,
+    .form-card,
+    .section-card,
+    .status-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .intro-card {
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .intro-title {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.3;
+    }
+
+    .intro-text {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .tip-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .tip-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .tip-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+    }
+
+    .tip-list li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .example-box {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #f3f8ef;
+        border: 1px solid #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 13px;
+        line-height: 1.8;
+        word-break: break-word;
+    }
+
+    .form-card {
+        padding: 22px;
+    }
+
+    .form-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .form-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .form-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .section-card {
+        padding: 18px 18px 6px;
+        margin-bottom: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .section-title {
+        margin: 0 0 14px 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .fields-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px 16px;
+    }
+
+    .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .field-item label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+
+    .field-item input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .field-item input:focus {
+        outline: none;
+        border-color: #b3c8a6;
+        box-shadow: 0 0 0 4px rgba(66, 107, 42, 0.08);
+    }
+
+    .field-note {
+        font-size: 12px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .field-item.span-2 {
+        grid-column: span 2;
+    }
+
+    .field-item.span-4 {
+        grid-column: span 4;
+    }
+
+    .action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .status-card {
+        display: none;
+        padding: 14px 16px;
+        background: #f5faef;
+        border-color: #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        min-width: 136px;
+        min-height: 46px;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #5c8444 100%);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(66, 107, 42, 0.18);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #f3f7f0;
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: #eaf3e4;
+    }
+
+    .search-footer-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1200px) {
+        .search-top {
+            grid-template-columns: 1fr;
+        }
+
+        .fields-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .field-item.span-4 {
+            grid-column: span 2;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .form-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .fields-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .field-item.span-2,
+        .field-item.span-4 {
+            grid-column: span 1;
+        }
+
+        .action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .button-group {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="search-top">
+    <div class="intro-card">
+        <h1 class="intro-title">GEO 数据集高级检索</h1>
+        <p class="intro-text">
+            该页面用于面向 GEO 数据库执行多字段组合检索。用户可根据关键词、作者、实验类型、
+            生物体、平台、样本数量、发布日期等条件进行筛选，系统将返回结构化结果文件，
+            便于后续候选数据集筛查、下载与分析。
+        </p>
+        <p class="intro-text">
+            检索结果以 Excel 文件形式导出，通常包含数据集状态、标题、生物体、实验类型、摘要、
+            整体设计、提交日期、更新日期、平台信息及样本信息等字段。
+        </p>
+    </div>
+
+    <div class="tip-card">
+        <h2 class="tip-title">使用提示</h2>
+        <ul class="tip-list">
+            <li>常用场景下可优先填写 All Fields、Organism、DataSet Type 和 Number of Samples。</li>
+            <li>范围型字段可使用区间形式，例如 <b>100:500</b> 或 <b>2007/01:2007/06</b>。</li>
+            <li>为了提高召回率，建议先用宽条件检索，再逐步增加限制条件。</li>
+            <li>All Fields 支持输入关键词列表，用于扩大候选数据集覆盖范围。</li>
+        </ul>
+        <div class="example-box">
+            示例关键词列表：<br>
+            ['ccRCC', 'renal cancer', 'renal tumor', 'PRCC', 'ChRCC', 'kidney cancer', 'kidney tumor', 'renal cell']
+        </div>
+    </div>
+</div>
+
+<div class="form-card">
+    <div class="form-head">
+        <div>
+            <h2>检索条件配置</h2>
+            <p>Search parameter configuration for GEO datasets</p>
+        </div>
+    </div>
+
+    <form id="searchForm" method="POST" action="/search-geo">
+        <div class="section-card">
+            <h3 class="section-title">一、常用检索字段</h3>
+            <div class="fields-grid">
+                <div class="field-item span-2">
+                    <label for="ALL">All Fields</label>
+                    <input type="text" id="ALL" name="ALL" placeholder="例如：cancer 或关键词列表">
+                    <div class="field-note">支持多关键词或列表形式输入。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="AUTH">Author</label>
+                    <input type="text" id="AUTH" name="AUTH" placeholder="例如：smith a">
+                </div>
+
+                <div class="field-item">
+                    <label for="ORGN">Organism</label>
+                    <input type="text" id="ORGN" name="ORGN" placeholder="例如：Mus musculus">
+                </div>
+
+                <div class="field-item">
+                    <label for="GTYP">DataSet Type</label>
+                    <input type="text" id="GTYP" name="GTYP" placeholder="例如：expression profiling by sequencing">
+                </div>
+
+                <div class="field-item">
+                    <label for="DESC">Description</label>
+                    <input type="text" id="DESC" name="DESC" placeholder="例如：smok*">
+                </div>
+
+                <div class="field-item">
+                    <label for="TITL">Title</label>
+                    <input type="text" id="TITL" name="TITL" placeholder="例如：Affymetrix">
+                </div>
+
+                <div class="field-item">
+                    <label for="ACCN">GEO Accession</label>
+                    <input type="text" id="ACCN" name="ACCN" placeholder="例如：GPL570 或 GSE22474">
+                </div>
+
+                <div class="field-item">
+                    <label for="retmax">Maximum Record Number</label>
+                    <input type="text" id="retmax" name="retmax" placeholder="例如：5000">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3 class="section-title">二、数据集与平台信息</h3>
+            <div class="fields-grid">
+                <div class="field-item">
+                    <label for="ETYP">Entry Type</label>
+                    <input type="text" id="ETYP" name="ETYP" placeholder="例如：gds">
+                </div>
+
+                <div class="field-item">
+                    <label for="FILT">Filter</label>
+                    <input type="text" id="FILT" name="FILT" placeholder="例如：gds pubmed">
+                </div>
+
+                <div class="field-item">
+                    <label for="MESH">MeSH Terms</label>
+                    <input type="text" id="MESH" name="MESH" placeholder="例如：methylation">
+                </div>
+
+                <div class="field-item">
+                    <label for="PTYP">Platform Technology Type</label>
+                    <input type="text" id="PTYP" name="PTYP" placeholder="例如：high throughput sequencing">
+                </div>
+
+                <div class="field-item">
+                    <label for="NPRO">Number of Platform Probes</label>
+                    <input type="text" id="NPRO" name="NPRO" placeholder="例如：1000000:1000000000">
+                </div>
+
+                <div class="field-item">
+                    <label for="RGPL">Related Platform</label>
+                    <input type="text" id="RGPL" name="RGPL" placeholder="例如：GPL570">
+                </div>
+
+                <div class="field-item">
+                    <label for="RGSE">Related Series</label>
+                    <input type="text" id="RGSE" name="RGSE" placeholder="例如：GSE22474">
+                </div>
+
+                <div class="field-item">
+                    <label for="PRO">Project</label>
+                    <input type="text" id="PRO" name="PRO" placeholder="例如：roadmap epigenomics">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3 class="section-title">三、样本与实验特征</h3>
+            <div class="fields-grid">
+                <div class="field-item">
+                    <label for="NSAM">Number of Samples</label>
+                    <input type="text" id="NSAM" name="NSAM" placeholder="例如：100:500">
+                </div>
+
+                <div class="field-item">
+                    <label for="SRC">Sample Source</label>
+                    <input type="text" id="SRC" name="SRC" placeholder="例如：brain">
+                </div>
+
+                <div class="field-item">
+                    <label for="STYP">Sample Type</label>
+                    <input type="text" id="STYP" name="STYP" placeholder="例如：protein">
+                </div>
+
+                <div class="field-item">
+                    <label for="VTYP">Sample Value Type</label>
+                    <input type="text" id="VTYP" name="VTYP" placeholder="例如：log ratio">
+                </div>
+
+                <div class="field-item">
+                    <label for="GEID">Reporter Identifier</label>
+                    <input type="text" id="GEID" name="GEID" placeholder="例如：Arg1">
+                </div>
+
+                <div class="field-item">
+                    <label for="SSDE">Subset Description</label>
+                    <input type="text" id="SSDE" name="SSDE" placeholder="例如：male">
+                </div>
+
+                <div class="field-item">
+                    <label for="SSTP">Subset Variable Type</label>
+                    <input type="text" id="SSTP" name="SSTP" placeholder="例如：age">
+                </div>
+
+                <div class="field-item">
+                    <label for="SFIL">Supplementary Files</label>
+                    <input type="text" id="SFIL" name="SFIL" placeholder="例如：cel">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3 class="section-title">四、时间与提交信息</h3>
+            <div class="fields-grid">
+                <div class="field-item">
+                    <label for="PDAT">Publication Date</label>
+                    <input type="text" id="PDAT" name="PDAT" placeholder="例如：2007/01:2007/06">
+                </div>
+
+                <div class="field-item">
+                    <label for="UDAT">Update Date</label>
+                    <input type="text" id="UDAT" name="UDAT" placeholder="例如：2010/06">
+                </div>
+
+                <div class="field-item">
+                    <label for="INST">Submitter Institute</label>
+                    <input type="text" id="INST" name="INST" placeholder="例如：Broad Institute">
+                </div>
+
+                <div class="field-item">
+                    <label for="TAGL">Tag Length</label>
+                    <input type="text" id="TAGL" name="TAGL" placeholder="例如：10">
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <div id="loadingMessage" class="status-card">正在检索 GEO 数据集，请不要重复点击按钮...</div>
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">开始检索并导出</button>
+                <button type="reset" class="btn btn-secondary">重置检索条件</button>
+            </div>
+        </div>
+
+        <div class="search-footer-note">
+            检索完成后，系统将自动下载结果文件。若字段留空，则该字段不参与当前检索条件约束。
+        </div>
+    </form>
+</div>
+
+<script>
+    const searchForm = document.getElementById('searchForm');
+    const loadingMessage = document.getElementById('loadingMessage');
+    let loadingTimer = null;
+    let dotCount = 0;
+
+    function showLoadingMessage() {
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = '正在检索 GEO 数据集，请不要重复点击按钮...';
+        loadingTimer = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            loadingMessage.textContent = '正在检索 GEO 数据集，请不要重复点击按钮' + '.'.repeat(dotCount);
+        }, 500);
+    }
+
+    function hideLoadingMessage() {
+        if (loadingTimer) {
+            clearInterval(loadingTimer);
+            loadingTimer = null;
+        }
+        dotCount = 0;
+        loadingMessage.style.display = 'none';
+    }
+
+    searchForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        showLoadingMessage();
+
+        try {
+            const response = await fetch('/search-geo', {
+                method: 'POST',
+                body: new FormData(searchForm),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '检索失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'GEO.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            hideLoadingMessage();
+        } catch (error) {
+            hideLoadingMessage();
+            alert('检索失败：' + error.message);
+        }
+    });
+</script>
+{% endblock %}

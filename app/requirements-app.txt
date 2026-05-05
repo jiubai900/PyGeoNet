@@ -1,0 +1,7 @@
+# Extra dependencies for the Flask web platform layer.
+# Install PyGeoNet root requirements first, then these app dependencies.
+Flask>=3.0.0
+Werkzeug>=3.0.0
+gseapy>=1.1.0
+umap-learn>=0.5.5
+seaborn>=0.13.0

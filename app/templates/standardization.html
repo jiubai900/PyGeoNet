@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+{% block style_css %}
+<style>
+    .standard-top {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .intro-card,
+    .help-card,
+    .panel-card,
+    .status-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .intro-card {
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9f1 100%);
+    }
+
+    .intro-title {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        line-height: 1.3;
+    }
+
+    .intro-text {
+        margin: 0 0 12px 0;
+        font-size: 15px;
+        line-height: 1.95;
+        color: var(--text-soft);
+    }
+
+    .help-card {
+        padding: 24px;
+        background: linear-gradient(180deg, #f8fbf6 0%, #ffffff 100%);
+    }
+
+    .help-title {
+        margin: 0 0 14px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .help-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+    }
+
+    .help-list li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .format-box {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #f3f8ef;
+        border: 1px solid #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 13px;
+        line-height: 1.8;
+        white-space: pre-line;
+    }
+
+    .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .panel-card {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+    }
+
+    .panel-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .panel-head h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .panel-head p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-soft);
+    }
+
+    .panel-desc {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        line-height: 1.9;
+        color: var(--text-soft);
+    }
+
+    .section-box {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #fbfcfa;
+        margin-bottom: 14px;
+    }
+
+    .section-title {
+        margin: 0 0 14px 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary-dark);
+    }
+
+    .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .field-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .field-item label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+
+    .field-item input[type="file"],
+    .field-item input[type="number"],
+    .field-item input[type="text"] {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .field-item input[type="file"]:focus,
+    .field-item input[type="number"]:focus,
+    .field-item input[type="text"]:focus {
+        outline: none;
+        border-color: #b3c8a6;
+        box-shadow: 0 0 0 4px rgba(66, 107, 42, 0.08);
+    }
+
+    .field-note {
+        font-size: 12px;
+        color: #7a8593;
+        line-height: 1.7;
+    }
+
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 44px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+    }
+
+    .checkbox-row label {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        cursor: pointer;
+    }
+
+    .status-card {
+        display: none;
+        padding: 14px 16px;
+        background: #f5faef;
+        border-color: #d8e5d0;
+        color: var(--primary-dark);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        min-width: 136px;
+        min-height: 46px;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.22s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #5c8444 100%);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(66, 107, 42, 0.18);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #f3f7f0;
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: #eaf3e4;
+    }
+
+    .btn:disabled {
+        background: #dfe8d8;
+        color: #7b8a74;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .footer-note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #7a8593;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1200px) {
+        .standard-top,
+        .panel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .panel-head {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .button-row {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="standard-top">
+    <div class="intro-card">
+        <h1 class="intro-title">数据规范化与主成分分析</h1>
+        <p class="intro-text">
+            该页面用于对 GEO 下载后的原始数据进行进一步处理。平台支持对 soft、matrix、suppl、
+            gpl 等相关文件进行表达矩阵重建与规范化，并输出可直接用于后续差异分析和关系预测的标准数据。
+        </p>
+        <p class="intro-text">
+            同时，页面还提供主成分分析功能，用于对多维表达数据进行降维表示，便于后续特征提取、
+            可视化展示和模型输入构建。
+        </p>
+    </div>
+
+    <div class="help-card">
+        <h2 class="help-title">使用提示</h2>
+        <ul class="help-list">
+            <li>GPL 文件不是必须项，未提供时系统可在处理过程中尝试自动补充，但耗时会增加。</li>
+            <li>批量处理时建议同时上传数据压缩包和平台注释压缩包，以提高处理稳定性。</li>
+            <li>主成分分析不会增加数据维度，主成分数量应设置为大于 0 的正整数。</li>
+            <li>若上传 zip 压缩包，系统会自动解压后读取其中的数据文件。</li>
+        </ul>
+
+        <div class="format-box">数据目录示例：
+GEO/
+│
+├── GSE11151/
+│   ├── soft/
+│   ├── matrix/
+│   └── suppl/
+
+主成分分析输入示例：
+data/
+│
+├── GSE11151.txt
+├── GSE12090.txt</div>
+    </div>
+</div>
+
+<div class="panel-grid">
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>数据规范化</h2>
+                <p>Expression matrix reconstruction and normalization</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            用于上传下载后的 GEO 原始数据和可选的平台注释文件，执行表达矩阵重建、样本对齐、
+            基因统一及标准化处理。
+        </p>
+
+        <form id="data-form" action="/standard" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">输入文件</h3>
+
+                <div class="field-item">
+                    <label for="file-data">数据文件上传</label>
+                    <input type="file" id="file-data" name="file-data" accept=".zip,.txt,.csv">
+                    <div class="field-note">必填。建议上传包含 GEO 数据目录的 zip 压缩包。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="file-plg">平台文件上传</label>
+                    <input type="file" id="file-plg" name="file-plg" accept=".zip,.txt,.csv">
+                    <div class="field-note">选填。若未上传平台文件，系统将尝试在处理阶段自动获取相关信息。</div>
+                </div>
+
+                <div class="field-item">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="single" name="single">
+                        <label for="single">单一文件处理模式</label>
+                    </div>
+                    <div class="field-note">当输入为单个文件而非标准目录结构时，可勾选该模式。</div>
+                </div>
+            </div>
+
+            <div id="loadingMessage" class="status-card">正在执行数据规范化，请不要重复点击按钮...</div>
+
+            <div class="button-row">
+                <button type="button" class="btn btn-primary" id="standard-btn" onclick="submitStandardForm()">开始处理</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetStandardForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                处理完成后系统将自动输出压缩结果文件，结果中通常包含规范化后的表达矩阵及相关中间产物。
+            </div>
+        </form>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <h2>主成分分析</h2>
+                <p>Principal component analysis for feature reduction</p>
+            </div>
+        </div>
+
+        <p class="panel-desc">
+            用于对标准化后的表达矩阵执行主成分分析，生成降维结果和相关输出文件，以支撑后续分析流程。
+        </p>
+
+        <form id="pca-form" action="/pca-feature" method="post" enctype="multipart/form-data">
+            <div class="section-box">
+                <h3 class="section-title">分析参数</h3>
+
+                <div class="field-item">
+                    <label for="pca-file-data">数据文件上传</label>
+                    <input type="file" id="pca-file-data" name="pca_file_data" accept=".zip,.txt,.csv">
+                    <div class="field-note">支持上传 zip、txt 或 csv 格式的数据文件。</div>
+                </div>
+
+                <div class="field-item">
+                    <label for="pca-n-components">主成分数量</label>
+                    <input type="number" id="pca-n-components" name="n_components" placeholder="例如：3" min="1">
+                    <div class="field-note">请输入大于 0 的正整数，通常可设置为 2 或 3。</div>
+                </div>
+            </div>
+
+            <div id="pcaLoadingMessage" class="status-card">正在执行主成分分析，请稍候...</div>
+
+            <div class="button-row">
+                <button type="button" class="btn btn-primary" id="pca-btn" onclick="submitPCAForm()">开始分析</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetPCAForm()">重置内容</button>
+            </div>
+
+            <div class="footer-note">
+                分析完成后系统将自动下载结果压缩包，通常包含主成分结果文件和相关图件输出。
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let standardTimer = null;
+    let pcaTimer = null;
+
+    function startLoadingMessage(elementId, baseText, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        let dots = 0;
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = baseText;
+
+        const timer = setInterval(() => {
+            dots = (dots + 1) % 4;
+            loadingMessage.textContent = baseText + '.'.repeat(dots);
+        }, 500);
+
+        if (timerType === 'standard') {
+            if (standardTimer) clearInterval(standardTimer);
+            standardTimer = timer;
+        } else {
+            if (pcaTimer) clearInterval(pcaTimer);
+            pcaTimer = timer;
+        }
+    }
+
+    function stopLoadingMessage(elementId, timerType) {
+        const loadingMessage = document.getElementById(elementId);
+        loadingMessage.style.display = 'none';
+
+        if (timerType === 'standard' && standardTimer) {
+            clearInterval(standardTimer);
+            standardTimer = null;
+        }
+        if (timerType === 'pca' && pcaTimer) {
+            clearInterval(pcaTimer);
+            pcaTimer = null;
+        }
+    }
+
+    async function submitStandardForm() {
+        const fileDataInput = document.getElementById('file-data');
+        const loadingMessageId = 'loadingMessage';
+        const submitBtn = document.getElementById('standard-btn');
+        const form = document.getElementById('data-form');
+
+        if (fileDataInput.files.length === 0) {
+            alert('请上传需要处理的数据文件。');
+            return;
+        }
+
+        const formData = new FormData(form);
+        submitBtn.disabled = true;
+        startLoadingMessage(loadingMessageId, '正在执行数据规范化，请不要重复点击按钮', 'standard');
+
+        try {
+            const response = await fetch('/standard', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '数据规范化失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'standard_result.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('数据规范化失败：' + error.message);
+        } finally {
+            stopLoadingMessage(loadingMessageId, 'standard');
+            submitBtn.disabled = false;
+        }
+    }
+
+    async function submitPCAForm() {
+        const pcaFileDataInput = document.getElementById('pca-file-data');
+        const nComponentsInput = document.getElementById('pca-n-components');
+        const submitBtn = document.getElementById('pca-btn');
+        const form = document.getElementById('pca-form');
+
+        if (pcaFileDataInput.files.length === 0) {
+            alert('请上传用于主成分分析的数据文件。');
+            return;
+        }
+
+        const nComponentsValue = nComponentsInput.value.trim();
+        if (!/^[1-9]\d*$/.test(nComponentsValue)) {
+            alert('主成分数量必须为大于 0 的正整数。');
+            return;
+        }
+
+        const formData = new FormData(form);
+        submitBtn.disabled = true;
+        startLoadingMessage('pcaLoadingMessage', '正在执行主成分分析，请稍候', 'pca');
+
+        try {
+            const response = await fetch('/pca-feature', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '主成分分析失败');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'pca_result.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('主成分分析失败：' + error.message);
+        } finally {
+            stopLoadingMessage('pcaLoadingMessage', 'pca');
+            submitBtn.disabled = false;
+        }
+    }
+
+    function resetStandardForm() {
+        document.getElementById('data-form').reset();
+        stopLoadingMessage('loadingMessage', 'standard');
+        document.getElementById('standard-btn').disabled = false;
+    }
+
+    function resetPCAForm() {
+        document.getElementById('pca-form').reset();
+        stopLoadingMessage('pcaLoadingMessage', 'pca');
+        document.getElementById('pca-btn').disabled = false;
+    }
+</script>
+{% endblock %}

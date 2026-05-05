@@ -7,7 +7,7 @@ import ast
 from bs4 import BeautifulSoup
 from openpyxl.workbook import Workbook
 from utils.search.tool import handle_all_fields, get_webpage_content
-
+from utils.log_tool import create_task_logger, log_section, log_args, log_exception, safe_len
 EXCEL_FILENAME = 'GEO.xlsx'
 COLUMN_NAMES = {
     'A': 'number',
@@ -107,7 +107,8 @@ def gse(ALL=None, AUTH=None, GTYP=None, DESC=None, ETYP=None, FILT=None,
         ACCN=None, MESH=None, NPRO=None, NSAM=None, ORGN=None, PTYP=None,
         PRO=None, PDAT=None, RGPL=None, RGSE=None, GEID=None, SRC=None,
         STYP=None, VTYP=None, INST=None, SSDE=None, SSTP=None, SFIL=None,
-        TAGL=None, TITL=None, UDAT=None, retmax=5000):
+        TAGL=None, TITL=None, UDAT=None, retmax=5000,
+        log_path=None, task_id=None):
     """
         Constructs and sends NCBI Gene Expression Omnibus (GEO) database query requests to retrieve records that meet specified criteria.
 
@@ -140,11 +141,54 @@ def gse(ALL=None, AUTH=None, GTYP=None, DESC=None, ETYP=None, FILT=None,
         - TITL: String specifying the title of the study.
         - UDAT: String specifying the update date.
         - retmax: Integer, specifies the maximum number of records to be returned, defaults to 5000.
-        For specific naming rules, please refer to  https://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html
+        - log_path: Directory used to save log files.
+        - task_id: Optional task id for current platform task.
+
         Return Value.
         - gse_arr: List containing formatted GEO series numbers.
+    """
+    logger, log_file = create_task_logger(
+        module_name="search_gse",
+        log_path=log_path,
+        task_id=task_id
+    )
 
-        """
+    log_section(logger, "GEO SEARCH STARTED")
+
+    log_args(
+        logger,
+        ALL=ALL,
+        AUTH=AUTH,
+        GTYP=GTYP,
+        DESC=DESC,
+        ETYP=ETYP,
+        FILT=FILT,
+        ACCN=ACCN,
+        MESH=MESH,
+        NPRO=NPRO,
+        NSAM=NSAM,
+        ORGN=ORGN,
+        PTYP=PTYP,
+        PRO=PRO,
+        PDAT=PDAT,
+        RGPL=RGPL,
+        RGSE=RGSE,
+        GEID=GEID,
+        SRC=SRC,
+        STYP=STYP,
+        VTYP=VTYP,
+        INST=INST,
+        SSDE=SSDE,
+        SSTP=SSTP,
+        SFIL=SFIL,
+        TAGL=TAGL,
+        TITL=TITL,
+        UDAT=UDAT,
+        retmax=retmax,
+        log_path=log_path,
+        task_id=task_id
+    )
+
     field_key_value = {
         'ALL': ALL,
         'AUTH': AUTH,
@@ -174,47 +218,92 @@ def gse(ALL=None, AUTH=None, GTYP=None, DESC=None, ETYP=None, FILT=None,
         'TITL': TITL,
         'UDAT': UDAT
     }
-    # Define all possible field aliases
+
     field_aliases = ['ALL', 'AUTH', 'GTYP', 'DESC', 'ETYP', 'FILT', 'ACCN', 'MESH', 'NPRO', 'NSAM', 'ORGN',
                      'PTYP', 'PRO', 'PDAT', 'RGPL', 'RGSE', 'GEID', 'SRC', 'STYP', 'VTYP', 'INST', 'SSDE',
                      'SSTP', 'SFIL', 'TAGL', 'TITL', 'UDAT']
-    term = 'term='
-    i = 0
-    # Constructing query strings
-    for item in field_aliases:
-        if item == 'ALL':
-            term = handle_all_fields(term, item, field_key_value)
-            i += 1
-            continue
 
-        if field_key_value[item]:
-            if i == 0:
-                term += f'{field_key_value[item]} [{item}]'
+    try:
+        log_section(logger, "BUILDING GEO QUERY TERM")
+
+        term = 'term='
+        i = 0
+        active_fields = []
+
+        for item in field_aliases:
+            if item == 'ALL':
+                before_term = term
+                term = handle_all_fields(term, item, field_key_value)
+
+                if term != before_term:
+                    active_fields.append(item)
+
                 i += 1
-            else:
-                term += '+AND+' + f'{field_key_value[item]} [{item}]'
+                continue
 
-    # Build and send HTTP requests
-    http_url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&{term}&retmax={retmax}&usehistory=y'
-    response = requests.get(http_url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'xml')
-        try:
-            # Parsing the response to extract the GEO series number
-            text = soup.find_all('Id')
-            gse_number = [element.get_text(strip=True) for element in text]
-            gse_arr = []
-            for item in gse_number:
-                if len(item) > 5:
-                    number = item[3::]
-                    while number[0] == '0':
-                        number = number[1::]
-                gse_arr.append(f'GSE{number}')
-            return gse_arr
-        except Exception as e:
-            print(f"Error parsing HTML: {e}")
+            if field_key_value[item]:
+                active_fields.append(item)
+
+                if i == 0:
+                    term += f'{field_key_value[item]} [{item}]'
+                    i += 1
+                else:
+                    term += '+AND+' + f'{field_key_value[item]} [{item}]'
+
+        logger.info(f"Active query fields: {active_fields}")
+        logger.info(f"Constructed query term: {term}")
+
+        log_section(logger, "SENDING NCBI GEO REQUEST")
+
+        http_url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&{term}&retmax={retmax}&usehistory=y'
+        logger.info(f"Request URL: {http_url}")
+
+        response = requests.get(http_url)
+
+        logger.info(f"HTTP status code: {response.status_code}")
+        logger.info(f"Response text length: {safe_len(response.text)}")
+
+        if response.status_code != 200:
+            logger.error(f"GEO request failed. HTTP status code: {response.status_code}")
+            log_section(logger, "GEO SEARCH FAILED")
+            logger.info(f"Log file saved at: {log_file}")
             return
 
+        log_section(logger, "PARSING GEO RESPONSE")
+
+        soup = BeautifulSoup(response.text, 'xml')
+
+        text = soup.find_all('Id')
+        gse_number = [element.get_text(strip=True) for element in text]
+
+        logger.info(f"Raw GEO id count: {len(gse_number)}")
+        logger.info(f"Raw GEO ids preview: {gse_number[:20]}")
+
+        gse_arr = []
+
+        for item in gse_number:
+            if len(item) > 5:
+                number = item[3::]
+                while number and number[0] == '0':
+                    number = number[1::]
+
+                if number:
+                    gse_arr.append(f'GSE{number}')
+
+        logger.info(f"Formatted GSE count: {len(gse_arr)}")
+        logger.info(f"Formatted GSE preview: {gse_arr[:20]}")
+
+        log_section(logger, "GEO SEARCH FINISHED")
+        logger.info(f"Returned GSE count: {len(gse_arr)}")
+        logger.info(f"Log file saved at: {log_file}")
+
+        return gse_arr
+
+    except Exception as e:
+        log_exception(logger, "Error occurred during GEO search.", e)
+        log_section(logger, "GEO SEARCH FAILED")
+        logger.info(f"Log file saved at: {log_file}")
+        return
 
 def main():
     parser = argparse.ArgumentParser(description='Command-line interface to process and query GSE data.')
